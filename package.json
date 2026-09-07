@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",

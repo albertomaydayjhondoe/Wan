@@ -27,3 +27,45 @@ jobs:
         run: npx tsc --noEmit
       - name: Build
         run: npm run build
+
+  seed:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: wan
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d wan"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: "postgresql://user:password@localhost:5432/wan"
+      AUTH_SECRET: "test-secret-change-me"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Generate Prisma client
+        run: npx prisma generate
+      - name: Install postgresql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Init pgvector
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f scripts/init-db.sql
+      - name: Push schema
+        run: npx prisma db push
+      - name: Seed
+        run: npx tsx prisma/seed.ts
+      - name: Build
+        run: npm run build

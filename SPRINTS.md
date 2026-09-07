@@ -2,7 +2,7 @@
 
 - [x] Sprint 1: Scaffold Next.js 14 + TypeScript + Tailwind + CI setup.
 
-- [ ] Sprint 2:
+- [x] Sprint 2: Schema Prisma (13 modelos) + seed + CI con pgvector.
 
 - [ ] Sprint 3:
 
